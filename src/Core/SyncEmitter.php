@@ -11,9 +11,14 @@ final class SyncEmitter
 
     private array $messageAttributes = [];
 
-    public function __construct(array $credentials, string $queueUrl)
+    private array $queueUrls = [];
+
+    private array $credentials = [];
+
+    public function __construct(array $credentials, array $queueUrls)
     {
-        $this->clientInit($credentials, $queueUrl);
+        $this->queueUrls = $queueUrls;
+        $this->credentials = $credentials;
     }
 
     /**
@@ -22,8 +27,25 @@ final class SyncEmitter
      * @return bool
      * @throws AwsException
      */
-    public function run(string $event, array $data, ?array $args = null): bool
+    public function run(string $event, array $data, ?array $args = null): void
     {
+        foreach ($this->queueUrls as $key => $value) {
+
+            $this->clientInit($this->credentials, $value);
+
+            $this->createEvent(
+                event: $event,
+                data: $data,
+                args: $args
+            );
+        }
+    }
+
+    // //----------------------------------------------------------------------
+
+    private function createEvent(string $event, array $data, ?array $args = null): bool
+    {
+
         $data['event'] = $event;
         try {
             if (is_null($args)) {

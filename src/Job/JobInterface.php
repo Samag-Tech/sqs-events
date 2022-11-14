@@ -12,7 +12,7 @@ interface JobInterface
      * @param  array $data
      * @return void
      */
-    public function __invoke(array $data);
+    public function __invoke(array $data): array;
 
     // //----------------------------------------------------------------------
 
