@@ -41,6 +41,7 @@ final class Emitter
                 'DataType' => "String",
                 'StringValue' => $event,
             ];
+            $this->client->sendMessage($args);
             return true;
         } catch (AwsException $th) {
             return $th->getTrace();
