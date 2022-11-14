@@ -1,1 +1,5 @@
 vendor
+test
+db
+docker-compose.yml
+.dockerignore
