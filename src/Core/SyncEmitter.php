@@ -5,7 +5,7 @@ namespace SamagTech\SqsEvents\Core;
 use Aws\Exception\AwsException;
 use SamagTech\SqsEvents\Traits\ClientSQS;
 
-final class Emitter
+final class SyncEmitter
 {
     use ClientSQS;
 
@@ -24,6 +24,7 @@ final class Emitter
      */
     public function run(string $event, array $data, ?array $args = null): bool
     {
+        $data['event'] = $event;
         try {
             if (is_null($args)) {
                 $args = [
@@ -39,13 +40,12 @@ final class Emitter
 
             $args["MessageAttributes"]["request"] = [
                 'DataType' => "String",
-                'StringValue' => $event,
+                'StringValue' => "sync",
             ];
 
             $msg = $this->client->sendMessage($args);
 
             return !is_null($msg->get("MessageId"));
-
         } catch (AwsException $th) {
             return $th->getTrace();
         }

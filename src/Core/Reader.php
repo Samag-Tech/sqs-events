@@ -15,13 +15,14 @@ final class Reader
 
     private Handler $handler;
 
-    public function __construct(array $events, array $credentials, string $queueUrl)
+    public function __construct(array $events, array $credentials, string $queueUrl, ?array $syncEvents = null)
     {
         // Inizializzo il client SQS
         $this->clientInit($credentials, $queueUrl);
 
         // Inizializzo l'handler dei messaggi
-        $this->handler = (new Handler($events));
+        $this->handler = (new Handler($events, $syncEvents));
+
     }
 
     // //----------------------------------------------------------------------
@@ -31,7 +32,7 @@ final class Reader
      *
      * @return void
      */
-    public function run(): bool|array
+    public function run(): string|array
     {
         try {
             // Recupero il messaggio dalla coda
@@ -44,7 +45,7 @@ final class Reader
                 // Esecuzione del messaggio
                 $res = $this->handler->execute(
                     action: $this->action,
-                    message: json_decode($result->get('Messages')[0]['Body'], true)
+                    message: json_decode($result->get('Messages')[0]['Body'], true),
                 );
 
                 // Eliminazione del messaggio dalla coda
@@ -55,11 +56,9 @@ final class Reader
 
                 // Ritorno il risultato dell'esecuzione del messaggio
                 return $res;
+            } else {
+                return "No messages in queue/n";
             }
-            else{
-                echo "No messages in queue/n";
-            }
-
         } catch (AwsException $e) {
             return $e->getTrace();
         }
