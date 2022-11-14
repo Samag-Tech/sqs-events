@@ -35,7 +35,7 @@ final class Reader
     {
         try {
             // Recupero il messaggio dalla coda
-            $result = $this->client->receiveMessage($this->recieve);
+            $result = $this->client->receiveMessage($this->SQS);
 
             if (!empty($result->get('Messages'))) {
 
@@ -56,6 +56,10 @@ final class Reader
                 // Ritorno il risultato dell'esecuzione del messaggio
                 return $res;
             }
+            else{
+                echo "No messages in queue/n";
+            }
+
         } catch (AwsException $e) {
             return $e->getTrace();
         }
