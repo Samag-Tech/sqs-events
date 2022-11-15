@@ -3,6 +3,7 @@
 namespace SamagTech\SqsEvents\Core;
 
 use Aws\Exception\AwsException;
+use SamagTech\SqsEvents\Exceptions\SyncException;
 use SamagTech\SqsEvents\Traits\ClientSQS;
 
 final class SyncEmitter
@@ -11,24 +12,35 @@ final class SyncEmitter
 
     /**
      * Attributi custome da aggiungere al messaggio
+     *
+     * @var array
+     * @access private
      */
     private array $messageAttributes = [];
 
     /**
-     * Indirizzi code sqs
+     * Indirizzi url code SQS
+     *
+     * @var array
+     * @access private
      */
     private array $queueUrls = [];
 
     /**
      * Credenziali utente SQS
+     *
+     * @var array
+     * @access private
      */
     private array $credentials = [];
 
     /**
      * Inizializzazione del client SQS
      *
-     * @param array $credentials = credenziali per accedere alla coda sqs
-     * @param array|string $queueUrls = url o lista di url appartenenti alla coda sqs a cui inviare il messaggio
+     * @param array $credentials            credenziali per accedere alla coda sqs
+     * @param array|string $queueUrls       url o lista di url appartenenti alla coda sqs a cui inviare il messaggio
+     *
+     * @access public
      */
     public function __construct(array $credentials, string|array $queueUrls)
     {
@@ -44,11 +56,13 @@ final class SyncEmitter
     /**
      * Registra un nuovo messaggio nella coda
      *
-     * @param string $event = Nome da dare all'evento
-     * @param array $data = Contenuto del messaggio
-     * @param ?array $args = Argomenti custom da aggiungere alla creazione della coda
+     * @param string $event         Nome da dare all'evento
+     * @param array $data           Contenuto del messaggio
+     * @param ?array $args          Argomenti custom da aggiungere alla creazione della coda
      *
      * @return void
+     *
+     * @access public
      */
     public function run(string $event, array $data, ?array $args = null): void
     {
@@ -67,11 +81,14 @@ final class SyncEmitter
     /**
      * Creazione evento di sincronizzazione
      *
-     * @param string $event = Nome da dare all'evento
-     * @param array $data = Contenuto del messaggio
-     * @param ?array $args = Argomenti custom da aggiungere alla creazione della coda
+     * @param string $event         Nome da dare all'evento
+     * @param array $data           Contenuto del messaggio
+     * @param array|null $args      Argomenti custom da aggiungere alla creazione della coda
      *
+     * @throws SyncException
      * @return void
+     *
+     * @access private
      */
     private function createEvent(string $event, array $data, ?array $args = null): void
     {
@@ -93,7 +110,7 @@ final class SyncEmitter
             ];
             $this->client->sendMessage($args);
         } catch (AwsException $th) {
-            throw $th;
+            throw new SyncException($th->getMessage(),$th->getStatusCode());
         }
     }
 }

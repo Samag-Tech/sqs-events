@@ -13,22 +13,36 @@ final class Handler
     use Response;
     /**
      * Attivazione dei log
+     *
+     * @var bool
+     *
+     * @access private
      */
     private bool $log = true;
 
     /**
      * Array contenente la lista dei possibili eventi da richiamare
+     *
+     * @var array
+     *
+     * @access private
      */
     private array $events = [];
 
     /**
      * Array contenente la lista degli eventi di sincronizzazione da poter richiamare
+     *
+     * @var array|null
+     *
+     * @access private
      */
     private ?array $syncEvents = null;
 
     /**
-     * @param array $events = Array contenente la lista dei possibili eventi da richiamare
-     * @param array $syncEvents = Array contenente la lista degli eventi di sincronizzazione da poter richiamare
+     * @param array $events             Array contenente la lista dei possibili eventi da richiamare
+     * @param array $syncEvents         Array contenente la lista degli eventi di sincronizzazione da poter richiamare
+     *
+     * @access public
      */
     public function __construct(array $events, ?array $syncEvents = null)
     {
@@ -41,10 +55,12 @@ final class Handler
     /**
      * Esecuzione dell'evento
      *
-     * @param string $action = Nome dell'evento da eseguire
-     * @param array $message = Dati da inviare al job
+     * @param string $action            Nome dell'evento da eseguire
+     * @param array $message            Dati da inviare al job
      *
-     * @return array getTrace|$action = Risultato dell'esecuzione dell'evento
+     * @return array getTrace|$action   Risultato dell'esecuzione dell'evento
+     *
+     * @access public
      */
     public function execute(string $action, array $message): array
     {
@@ -57,7 +73,7 @@ final class Handler
         }
 
         $event = (new $this->events[$action]);
-        $action = $event($message);
+        $action = $event->handle($message);
 
         if (!$event->getStatus() && $this->log) {
             return $this->createLog($event->getErrors(), $event->getAction(), $event->getMsgType(), $message);
@@ -73,6 +89,8 @@ final class Handler
      * @param bool $log
      *
      * @return self
+     *
+     * @access public
      */
     public function setLogs(bool $log): self
     {

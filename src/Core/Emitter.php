@@ -15,24 +15,38 @@ final class Emitter
     /**
      * Array contenente gli attributi custom da aggiungere
      * alla richiesta di creazione del messaggio
+     *
+     * @var array
+     *
+     * @access private
      */
     private array $messageAttributes = [];
 
     /**
      * Indirizzi code SQS
+     *
+     * @var array
+     *
+     * @access private
      */
     private array $queueUrls = [];
 
     /**
      * Credenziali utente SQS
+     *
+     * @var array
+     *
+     * @access private
      */
     private array $credentials = [];
 
     /**
      * Inizializzazione del client SQS
      *
-     * @param array $credentials = credenziali per accedere alla coda SQS
-     * @param array|string $queueUrls = url o lista di url appartenenti alla coda SQS a cui inviare il messaggio
+     * @param array $credentials            Credenziali per accedere alla coda SQS
+     * @param array|string $queueUrls       Url o lista di url appartenenti alla coda SQS a cui inviare il messaggio
+     *
+     * @access public
      */
     public function __construct(array $credentials, array|string $queueUrls)
     {
@@ -46,13 +60,16 @@ final class Emitter
     // //----------------------------------------------------------------------
 
     /**
-     * Invia il messaggio su tutte le code passate al costruttore
+     * Richiama la funzione di creazione del messaggio
+     * per ogni coda inviata al costruttore
      *
-     * @param string $event = Nome da dare all'evento
-     * @param array $data = Contenuto del messaggio
-     * @param ?array $args = Argomenti custom da aggiungere alla creazione della coda
+     * @param string $event             Nome da dare all'evento
+     * @param array $data               Contenuto del messaggio
+     * @param ?array $args              Argomenti custom da aggiungere alla creazione della coda
      *
      * @return void
+     *
+     * @access public
      */
     public function run(string $event, array $data, ?array $args = null): void
     {
@@ -70,7 +87,12 @@ final class Emitter
 
     /**
      * Funzione per il settaggio degli attributi custom da aggiungere al messaggio
+     *
+     * @param array $attributes         Attributi custome da aggiungere
+     *
      * @return self
+     *
+     * @access public
      */
     public function setAttributes(array $attributes) : self
     {
@@ -83,11 +105,13 @@ final class Emitter
     /**
      * Creazione dell'evento nella coda
      *
-     * @param string $event = Nome da dare all'evento
-     * @param array $data = Contenuto del messaggio
-     * @param ?array $args = Argomenti custom da aggiungere alla creazione della coda
+     * @param string $event         Nome da dare all'evento
+     * @param array $data           Contenuto del messaggio
+     * @param ?array $args          Argomenti custom da aggiungere alla creazione della coda
      *
      * @return void
+     *
+     * @access private
      */
     private function createEvent(string $event, array $data, ?array $args = null): void
     {
