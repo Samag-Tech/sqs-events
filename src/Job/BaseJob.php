@@ -54,6 +54,7 @@ abstract class BaseJob implements JobInterface
         try {
             return $this->execute($data);
         } catch (\throwable $th) {
+            $this->setErrors($th);
             return $this->respond($th->getMessage(),"exception",500);
         }
     }
