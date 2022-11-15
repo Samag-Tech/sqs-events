@@ -2,15 +2,28 @@
 
 namespace SamagTech\SqsEvents\Job;
 
-use SamagTech\SqsEvents\Traits\ExceptionToArray;
 use Throwable;
 
 abstract class BaseJob implements JobInterface
 {
-    public bool $status = true;
+    /**
+     * Stato dell'esecuzione del messaggio
+     */
+    protected bool $status = true;
 
-    public string $type;
+    /**
+     * Tipologia di evento
+     */
+    protected string $type;
 
+    /**
+     * Nome dell'evento
+     */
+    protected string $action;
+
+    /**
+     * Eccezione catturata durante l'esecuzione del job
+     */
     private Throwable $errors;
 
     // //----------------------------------------------------------------------
@@ -30,12 +43,33 @@ abstract class BaseJob implements JobInterface
     // //----------------------------------------------------------------------
 
     /**
-     * ritorna gli errori riscontrati durante l'esecuzione del messaggio
+     * Ritorna gli errori riscontrati durante l'esecuzione del messaggio
      *
      * @return Throwable
      */
     public function getErrors(): Throwable
     {
         return $this->errors;
+    }
+
+    // //----------------------------------------------------------------------
+
+    public function getStatus(): bool
+    {
+        return $this->status;
+    }
+
+    // //----------------------------------------------------------------------
+
+    public function getAction(): string
+    {
+        return $this->action;
+    }
+
+    // //----------------------------------------------------------------------
+
+    public function getMsgType(): string
+    {
+        return $this->type;
     }
 }
