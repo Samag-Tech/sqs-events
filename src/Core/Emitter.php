@@ -5,24 +5,91 @@ namespace SamagTech\SqsEvents\Core;
 use Aws\Exception\AwsException;
 use SamagTech\SqsEvents\Traits\ClientSQS;
 
+/**
+ * Classe per la creazione di messaggi su una coda SQS
+ */
 final class Emitter
 {
     use ClientSQS;
 
+    /**
+     * Array contenente gli attributi custom da aggiungere
+     * alla richiesta di creazione del messaggio
+     */
     private array $messageAttributes = [];
 
-    public function __construct(array $credentials, string $queueUrl)
-    {
-        $this->clientInit($credentials, $queueUrl);
-    }
+    /**
+     * Indirizzi code SQS
+     */
+    private array $queueUrls = [];
 
     /**
-     * Registra un nuovo messaggio nella coda
-     *
-     * @return bool
-     * @throws AwsException
+     * Credenziali utente SQS
      */
-    public function run(string $event, array $data, ?array $args = null): bool
+    private array $credentials = [];
+
+    /**
+     * Inizializzazione del client SQS
+     *
+     * @param array $credentials = credenziali per accedere alla coda SQS
+     * @param array|string $queueUrls = url o lista di url appartenenti alla coda SQS a cui inviare il messaggio
+     */
+    public function __construct(array $credentials, array|string $queueUrls)
+    {
+        if (is_string($queueUrls)) {
+            $queueUrls = [$queueUrls];
+        }
+        $this->queueUrls = $queueUrls;
+        $this->credentials = $credentials;
+    }
+
+    // //----------------------------------------------------------------------
+
+    /**
+     * Invia il messaggio su tutte le code passate al costruttore
+     *
+     * @param string $event = Nome da dare all'evento
+     * @param array $data = Contenuto del messaggio
+     * @param ?array $args = Argomenti custom da aggiungere alla creazione della coda
+     *
+     * @return void
+     */
+    public function run(string $event, array $data, ?array $args = null): void
+    {
+        foreach ($this->queueUrls as $key => $queue) {
+            $this->clientInit($this->credentials, $queue);
+            $this->createEvent(
+                event: $event,
+                data: $data,
+                args: $args
+            );
+        }
+    }
+
+    // //----------------------------------------------------------------------
+
+    /**
+     * Funzione per il settaggio degli attributi custom da aggiungere al messaggio
+     * @return self
+     */
+    public function setAttributes(array $attributes) : self
+    {
+        $this->messageAttributes = $attributes;
+        return $this;
+    }
+
+    // //----------------------------------------------------------------------
+
+    /**
+     * Creazione dell'evento nella coda
+     *
+     * @param string $event = Nome da dare all'evento
+     * @param array $data = Contenuto del messaggio
+     * @param ?array $args = Argomenti custom da aggiungere alla creazione della coda
+     *
+     * @return void
+     */
+    private function createEvent(string $event, array $data, ?array $args = null): void
     {
         try {
             if (is_null($args)) {
@@ -41,13 +108,9 @@ final class Emitter
                 'DataType' => "String",
                 'StringValue' => $event,
             ];
-
-            $msg = $this->client->sendMessage($args);
-
-            return !is_null($msg->get("MessageId"));
-
+            $this->client->sendMessage($args);
         } catch (AwsException $th) {
-            return $th->getTrace();
+            throw $th;
         }
     }
 }
