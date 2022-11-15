@@ -40,11 +40,11 @@ trait Response
                 "message" => json_encode($message),
                 "failed"  => true,
                 "type"    => $type,
-                "line"    => $res->getErrors()->getLine(),
-                "trace"   => $res->getErrors()->getTraceAsString(),
-                "file"    => $res->getErrors()->getFile(),
-                "method"  => $res->getErrors()->getTrace()[0]['class'] . "->" . $res->getErrors()->getTrace()[0]['function'] . "()",
-                "message" => $res->getErrors()->getMessage(),
+                "line"    => $res->getLine(),
+                "trace"   => $res->getTraceAsString(),
+                "file"    => $res->getFile(),
+                "method"  => $res->getTrace()[0]['class'] . "->" . $res->getTrace()[0]['function'] . "()",
+                "message" => $res->getMessage(),
             ]
         ];
     }

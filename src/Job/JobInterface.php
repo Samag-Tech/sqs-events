@@ -2,8 +2,6 @@
 
 namespace SamagTech\SqsEvents\Job;
 
-use Throwable;
-
 interface JobInterface
 {
     /**
@@ -12,14 +10,5 @@ interface JobInterface
      * @param  array $data
      * @return void
      */
-    public function __invoke(array $data): array;
-
-    // //----------------------------------------------------------------------
-
-    /**
-     * Ritorna gli errori riscontrati durante l'esecuzione delle query
-     *
-     * @return Throwable
-     */
-    public function getErrors(): Throwable;
+    public function execute(array $data): array;
 }

@@ -2,7 +2,6 @@
 
 namespace SamagTech\SqsEvents\Core;
 
-use SamagTech\SqsEvents\Exceptions\SyncException;
 use SamagTech\SqsEvents\Traits\Response;
 
 final class SyncHandler
@@ -11,13 +10,19 @@ final class SyncHandler
 
     /**
      * Lista di eventi di sincronizzazione
+     *
+     * @var array
+     *
+     * @access private
      */
     private array $syncEvents = [];
 
     /**
      * Settaggio degli eventi di sincronizzazione
      *
-     * @param $syncEvents = Lista di eventi lanciabili
+     * @param $syncEvents           Lista di eventi lanciabili
+     *
+     * @access public
      */
     public function __construct(array $syncEvents)
     {
@@ -29,9 +34,11 @@ final class SyncHandler
     /**
      * Handling dei messaggi di sincronizzazione
      *
-     * @param $message = Messaggio contenuto nell evento
+     * @param $message              Messaggio contenuto nell evento
      *
      * @return array
+     *
+     * @access public
      */
     public function sync(array $message): array
     {
@@ -40,7 +47,7 @@ final class SyncHandler
         }
 
         $event = new $this->syncEvents[$message['event']];
-        $action = $event($message);
+        $action = $event->handle($message);
 
         if (!$event->getStatus() && $this->log) {
             return $this->createLog($event->getErrors(), $event->getAction(), $event->getMsgType(), $message);

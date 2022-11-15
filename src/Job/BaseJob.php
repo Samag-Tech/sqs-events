@@ -2,39 +2,87 @@
 
 namespace SamagTech\SqsEvents\Job;
 
+use SamagTech\SqsEvents\Traits\Response;
 use Throwable;
 
+/**
+ * Classe da estendere per il corretto funzionamento dei job
+ */
 abstract class BaseJob implements JobInterface
 {
+    use Response;
     /**
      * Stato dell'esecuzione del messaggio
+     *
+     * @var bool
+     *
+     * @access private
      */
-    protected bool $status = true;
+    private bool $status = true;
 
     /**
      * Tipologia di evento
+     *
+     * @var string
+     *
+     * @access private
      */
-    protected string $type;
+    private string $type;
 
     /**
      * Nome dell'evento
+     *
+     * @var string
+     *
+     * @access private
      */
-    protected string $action;
+    private string $action;
 
     /**
      * Eccezione catturata durante l'esecuzione del job
+     *
+     * @var Throwable
+     *
+     * @access private
      */
     private Throwable $errors;
+
+    // //----------------------------------------------------------------------
+
+    public function handle(array $data) : array
+    {
+        try {
+            return $this->execute($data);
+        } catch (\throwable $th) {
+            return $this->respond($th->getMessage(),"exception",500);
+        }
+    }
+
+    // //----------------------------------------------------------------------
+
+    /**
+     * Settaggio degli errori
+     *
+     * @return void
+     *
+     * @access public
+     */
+    public function setErrors(throwable $errors)
+    {
+        $this->handleError($errors);
+    }
 
     // //----------------------------------------------------------------------
 
     /**
      * Salvataggio degli errori
      *
-     * @param  mixed $errors
+     * @param  throwable $errors
      * @return void
+     *
+     * @access protected
      */
-    protected function handleError($errors): void
+    protected function handleError(throwable $errors): void
     {
         $this->errors = $errors;
         $this->status = false;
@@ -54,6 +102,13 @@ abstract class BaseJob implements JobInterface
 
     // //----------------------------------------------------------------------
 
+    /**
+     * Getter per lo status
+     *
+     * @return bool
+     *
+     * @access public
+     */
     public function getStatus(): bool
     {
         return $this->status;
@@ -61,6 +116,29 @@ abstract class BaseJob implements JobInterface
 
     // //----------------------------------------------------------------------
 
+    /**
+     * Setta lo status del job
+     *
+     * @param  bool $status
+     * @return self
+     *
+     * @access protected
+     */
+    protected function setStatus(bool $status): self
+    {
+        $this->status = $status;
+        return $this;
+    }
+
+    // //----------------------------------------------------------------------
+
+    /**
+     * Ritorna il nome dell'azione svolta dal job
+     *
+     * @return string
+     *
+     * @access public
+     */
     public function getAction(): string
     {
         return $this->action;
@@ -68,8 +146,47 @@ abstract class BaseJob implements JobInterface
 
     // //----------------------------------------------------------------------
 
+    /**
+     * Setta il nome dell'azione svolta dal job
+     *
+     * @param string $action        Nome da dare all'azione svolta dal job
+     * @return self
+     *
+     * @access protected
+     */
+    protected function setAction(string $action): self
+    {
+        $this->action = $action;
+        return $this;
+    }
+
+    // //----------------------------------------------------------------------
+
+    /**
+     * Ritorna la tipologia di job
+     *
+     * @return string
+     *
+     * @access public
+     */
     public function getMsgType(): string
     {
         return $this->type;
+    }
+
+    // //----------------------------------------------------------------------
+
+    /**
+     * Sette della tipologia di job
+     *
+     * @param string $type
+     * @return self
+     *
+     * @access protected
+     */
+    protected function setMsgType(string $type): self
+    {
+        $this->type = $type;
+        return $this;
     }
 }
