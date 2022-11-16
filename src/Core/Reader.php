@@ -82,7 +82,7 @@ final class Reader
                 return $res;
             }
         } catch (AwsException $e) {
-            return $this->respond($e->getTrace(), "exception", 400);
+            return $this->respondError($e->getTrace());
         }
     }
 }

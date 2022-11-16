@@ -69,7 +69,7 @@ final class Handler
         }
 
         if (!isset($this->events[$action])) {
-            return $this->respond(null, "not_found", 404);
+            return $this->respondError("Evento $action non settato", 404);
         }
 
         $event = (new $this->events[$action]);
@@ -78,7 +78,7 @@ final class Handler
         if (!$event->getStatus() && $this->log) {
             return $this->createLog($event->getErrors(), $event->getAction(), $event->getMsgType(), $message);
         }
-        return $this->respond($action, "success", 200);
+        return $this->respondSuccess($action);
     }
 
     // //----------------------------------------------------------------------

@@ -49,13 +49,21 @@ abstract class BaseJob implements JobInterface
 
     // //----------------------------------------------------------------------
 
-    public function handle(array $data) : array
+    public function handle(array $data): array
     {
         try {
-            return $this->execute($data);
+            $data = $this->preExecute($data);
+
+            $res = $this->execute($data);
+
+            $this->postExecute($data);
+
+            return $res;
         } catch (\throwable $th) {
+
             $this->setErrors($th);
-            return $this->respond($th->getMessage(),"exception",500);
+
+            return $this->respondError($th->getMessage());
         }
     }
 
@@ -71,6 +79,37 @@ abstract class BaseJob implements JobInterface
     public function setErrors(throwable $errors)
     {
         $this->handleError($errors);
+    }
+
+    // //----------------------------------------------------------------------
+
+    /**
+     * Callback per l'esecuzione di operazioni PRE esecuzione del job
+     *
+     * @param  array $data
+     *
+     * @return array
+     *
+     * @access protected
+     */
+    protected function preExecute(array $data): array
+    {
+        return $data;
+    }
+
+    // //----------------------------------------------------------------------
+
+    /**
+     * Callback per l'esecuzione di operazioni POST esecuzione del job
+     *
+     * @param  array $data
+     *
+     * @return void
+     *
+     * @access protected
+     */
+    protected function postExecute(array $data): void
+    {
     }
 
     // //----------------------------------------------------------------------
