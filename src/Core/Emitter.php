@@ -3,6 +3,7 @@
 namespace SamagTech\SqsEvents\Core;
 
 use Aws\Exception\AwsException;
+use SamagTech\SqsEvents\Exceptions\EmitterException;
 use SamagTech\SqsEvents\Traits\ClientSQS;
 
 /**
@@ -94,7 +95,7 @@ final class Emitter
      *
      * @access public
      */
-    public function setAttributes(array $attributes) : self
+    public function setAttributes(array $attributes): self
     {
         $this->messageAttributes = $attributes;
         return $this;
@@ -125,16 +126,15 @@ final class Emitter
                     'QueueUrl' => $this->queueUrl
                 ];
             }
-
             $args["MessageBody"] = json_encode($data);
-
             $args["MessageAttributes"]["request"] = [
                 'DataType' => "String",
                 'StringValue' => $event,
             ];
+
             $this->client->sendMessage($args);
         } catch (AwsException $th) {
-            throw $th;
+            throw new EmitterException($th->getMessage(), $th->getStatusCode());
         }
     }
 }

@@ -42,8 +42,8 @@ final class SyncHandler
      */
     public function sync(array $message): array
     {
-        if (!isset($this->events[$message['event']])) {
-            return $this->respond(null, "not_found", 404);
+        if (!isset($this->syncEvents[$message['event']])) {
+            return $this->respondError("Evento " . $message['event'] . " non settato",404);
         }
 
         $event = new $this->syncEvents[$message['event']];
@@ -53,6 +53,6 @@ final class SyncHandler
             return $this->createLog($event->getErrors(), $event->getAction(), $event->getMsgType(), $message);
         }
 
-        return $this->respond($action, "success", 200);
+        return $this->respondSuccess($action);
     }
 }
