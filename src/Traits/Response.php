@@ -65,6 +65,24 @@ trait Response
     // //----------------------------------------------------------------------
 
     /**
+     * Messaggio da ritornare quando non si sta effettuando nessuna azione
+     *
+     * @return array
+     *
+     * @access public
+     */
+    public function respondNoAction(): array
+    {
+        return [
+            "type" => "no_action",
+            "status" => 200,
+            "message"=> "No messages to execute"
+        ];
+    }
+
+    // //----------------------------------------------------------------------
+
+    /**
      * Formatta le eccezioni per creare i log
      *
      * @param $res              Eccezione da formattare

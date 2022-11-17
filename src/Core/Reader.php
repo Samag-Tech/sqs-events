@@ -81,6 +81,9 @@ final class Reader
                 // Ritorno il risultato dell'esecuzione del messaggio
                 return $res;
             }
+
+            return $this->respondNoAction();
+
         } catch (AwsException $e) {
             return $this->respondError($e->getTrace());
         }
