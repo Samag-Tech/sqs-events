@@ -49,7 +49,7 @@ final class SyncHandler
         $event = new $this->syncEvents[$message['event']];
         $action = $event->handle($message);
 
-        if (!$event->getStatus() && $this->log) {
+        if (!$event->getStatus()) {
             return $this->createLog($event->getErrors(), $event->getAction(), $event->getMsgType(), $message);
         }
 

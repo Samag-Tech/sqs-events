@@ -11,14 +11,6 @@ use SamagTech\SqsEvents\Traits\Response;
 final class Handler
 {
     use Response;
-    /**
-     * Attivazione dei log
-     *
-     * @var bool
-     *
-     * @access private
-     */
-    private bool $log = true;
 
     /**
      * Array contenente la lista dei possibili eventi da richiamare
@@ -75,26 +67,9 @@ final class Handler
         $event = (new $this->events[$action]);
         $action = $event->handle($message);
 
-        if (!$event->getStatus() && $this->log) {
+        if (!$event->getStatus()) {
             return $this->createLog($event->getErrors(), $event->getAction(), $event->getMsgType(), $message);
         }
         return $this->respondSuccess($action);
-    }
-
-    // //----------------------------------------------------------------------
-
-    /**
-     * TRUE per abilitare i log, FALSE per disabilitare, di default i log sono sempre attivi
-     *
-     * @param bool $log
-     *
-     * @return self
-     *
-     * @access public
-     */
-    public function setLogs(bool $log): self
-    {
-        $this->log = $log;
-        return $this;
     }
 }
