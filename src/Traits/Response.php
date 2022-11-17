@@ -76,7 +76,7 @@ trait Response
         return [
             "type" => "no_action",
             "status" => 200,
-            "message"=> "No messages to execute"
+            "message" => "No messages to execute"
         ];
     }
 
@@ -97,13 +97,13 @@ trait Response
     public function createLog(Object $res, string $action, string $type, array $message): array
     {
         return [
-            "type" => "exception",
-            "status" => 500,
+            "type"    => "exception",
+            "status"  => 500,
             "message" => [
-                "name" => $action,
+                "name"    => $type,
                 "message" => json_encode($message),
                 "failed"  => true,
-                "type"    => $type,
+                "type"    => $action,
                 "line"    => $res->getLine(),
                 "trace"   => $res->getTraceAsString(),
                 "file"    => $res->getFile(),
