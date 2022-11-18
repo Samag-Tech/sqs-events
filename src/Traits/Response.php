@@ -100,10 +100,10 @@ trait Response
             "type"    => "exception",
             "status"  => 500,
             "message" => [
-                "name"    => $type,
+                "name"    => $action,
                 "message" => json_encode($message),
                 "failed"  => true,
-                "type"    => $action,
+                "type"    =>  $type,
                 "line"    => $res->getLine(),
                 "trace"   => $res->getTraceAsString(),
                 "file"    => $res->getFile(),
