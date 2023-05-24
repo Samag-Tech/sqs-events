@@ -3,3 +3,4 @@ test
 db
 docker-compose.yml
 .dockerignore
+composer.lock
